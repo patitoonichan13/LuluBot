@@ -5,12 +5,15 @@
  *
  * Dev Gui </>
  */
+const { loadFunctions } = require("./utils/functions");
+
 async function runLite({ socket: lite, events }) {
   if (!events["messages.upsert"]) {
     return;
   }
 
-  // Aqui virão as cases, body, etc, etc, etc...
+  const upsert = events["messages.upsert"];
+  const {} = loadFunctions({ lite, upsert });
 }
 
 exports.runLite = runLite;
