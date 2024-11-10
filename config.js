@@ -21,6 +21,8 @@ exports.ASSETS_DIR = path.resolve(__dirname, "assets");
 // Diretório de arquivos temporários.
 exports.TEMP_DIR = path.resolve(__dirname, "temp");
 
+exports.BAILEYS_CREDS_DIR = path.resolve(__dirname, "baileys");
+
 // Timeout em milissegundos por evento (evita banimento).
 exports.TIMEOUT_IN_MILLISECONDS_BY_EVENT = 700;
 

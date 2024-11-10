@@ -2,9 +2,9 @@
   "name": "lite-bot",
   "version": "1.0.0",
   "description": "Bot de WhatsApp minimalista multifunções.",
-  "main": "index.js",
+  "main": "start.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node start.js"
   },
   "keywords": [
     "whatsapp",
