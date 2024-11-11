@@ -23,8 +23,8 @@ exports.TEMP_DIR = path.resolve(__dirname, "temp");
 
 exports.BAILEYS_CREDS_DIR = path.resolve(__dirname, "baileys");
 
-// Timeout em milissegundos por evento (evita banimento).
-exports.TIMEOUT_IN_MILLISECONDS_BY_EVENT = 700;
+// Timeout em milissegundos por ação (evitar banimento do número).
+exports.TIMEOUT_IN_MILLISECONDS_BY_ACTION = 700;
 
 // Plataforma de API's
 exports.SPIDER_API_BASE_URL = "https://api.spiderx.com.br/api";

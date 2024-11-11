@@ -21,13 +21,14 @@ const {
 const NodeCache = require("node-cache");
 const pino = require("pino");
 const { BAILEYS_CREDS_DIR } = require("./config");
-const { runLite } = require(".");
+const { runLite } = require("./index");
 const { onlyNumbers } = require("./utils/functions");
 const {
   textInput,
   infoLog,
   warningLog,
   errorLog,
+  successLog,
   bannerLog,
 } = require("./utils/terminal");
 
@@ -36,16 +37,6 @@ const msgRetryCounterCache = new NodeCache();
 const store = makeInMemoryStore({
   logger: pino().child({ level: "silent", stream: "store" }),
 });
-
-async function getMessage(key) {
-  if (!store) {
-    return proto.Message.fromObject({});
-  }
-
-  const msg = await store.loadMessage(key.remoteJid, key.id);
-
-  return msg ? msg.message : undefined;
-}
 
 async function startConnection() {
   const { state, saveCreds } = await useMultiFileAuthState(BAILEYS_CREDS_DIR);
@@ -64,7 +55,15 @@ async function startConnection() {
     markOnlineOnConnect: true,
     msgRetryCounterCache,
     shouldSyncHistoryMessage: () => false,
-    getMessage,
+    getMessage: async (key) => {
+      if (!store) {
+        return proto.Message.fromObject({});
+      }
+
+      const msg = await store.loadMessage(key.remoteJid, key.id);
+
+      return msg ? msg.message : undefined;
+    },
   });
 
   bannerLog();
@@ -91,59 +90,55 @@ async function startConnection() {
     infoLog(`Código de pareamento: ${code}`);
   }
 
-  socket.ev.process(async (events) => {
-    if (events["connection.update"]) {
-      const update = events["connection.update"];
-      const { connection, lastDisconnect } = update;
+  socket.ev.on("connection.update", async (update) => {
+    const { connection, lastDisconnect } = update;
 
-      if (connection === "close") {
-        const statusCode =
-          lastDisconnect.error?.output?.statusCode !==
-          DisconnectReason.loggedOut;
+    if (connection === "close") {
+      const statusCode =
+        lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
 
-        if (statusCode === DisconnectReason.loggedOut) {
-          errorLog("Bot desconectado!");
-        } else {
-          switch (statusCode) {
-            case DisconnectReason.badSession:
-              warningLog("Sessão inválida!");
-              break;
-            case DisconnectReason.connectionClosed:
-              warningLog("Conexão fechada!");
-              break;
-            case DisconnectReason.connectionLost:
-              warningLog("Conexão perdida!");
-              break;
-            case DisconnectReason.connectionReplaced:
-              warningLog("Conexão substituída!");
-              break;
-            case DisconnectReason.multideviceMismatch:
-              warningLog("Dispositivo incompatível!");
-              break;
-            case DisconnectReason.forbidden:
-              warningLog("Conexão proibida!");
-              break;
-            case DisconnectReason.restartRequired:
-              infoLog('Me reinicie por favor! Digite "npm start".');
-              break;
-            case DisconnectReason.unavailableService:
-              warningLog("Serviço indisponível!");
-              break;
-          }
-
-          const newSocket = await startConnection();
-          runLite({ socket: newSocket, events });
-        }
-      } else if (connection === "open") {
-        successLog("Fui conectado com sucesso!");
+      if (statusCode === DisconnectReason.loggedOut) {
+        errorLog("Bot desconectado!");
       } else {
-        infoLog("Atualizando conexão...");
-      }
-    }
+        switch (statusCode) {
+          case DisconnectReason.badSession:
+            warningLog("Sessão inválida!");
+            break;
+          case DisconnectReason.connectionClosed:
+            warningLog("Conexão fechada!");
+            break;
+          case DisconnectReason.connectionLost:
+            warningLog("Conexão perdida!");
+            break;
+          case DisconnectReason.connectionReplaced:
+            warningLog("Conexão substituída!");
+            break;
+          case DisconnectReason.multideviceMismatch:
+            warningLog("Dispositivo incompatível!");
+            break;
+          case DisconnectReason.forbidden:
+            warningLog("Conexão proibida!");
+            break;
+          case DisconnectReason.restartRequired:
+            infoLog('Me reinicie por favor! Digite "yarn start".');
+            break;
+          case DisconnectReason.unavailableService:
+            warningLog("Serviço indisponível!");
+            break;
+        }
 
-    if (events["creds.update"]) {
-      await saveCreds();
+        startConnection();
+      }
+    } else if (connection === "open") {
+      successLog("Fui conectado com sucesso!");
+    } else {
+      successLog("Conexão estabelecida!");
     }
+  });
+
+  socket.ev.on("creds.update", saveCreds);
+  socket.ev.on("messages.upsert", (data) => {
+    runLite({ socket, data });
   });
 
   return socket;
