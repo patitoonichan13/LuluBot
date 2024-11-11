@@ -3,7 +3,7 @@
  *
  * Aqui é onde você vai definir o que o seu bot vai fazer.
  *
- * Dev Gui </>
+ * @author Dev Gui
  */
 const { loadFunctions } = require("./utils/functions");
 

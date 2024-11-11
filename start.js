@@ -5,9 +5,8 @@
  *
  * Não é recomendado alterar este arquivo, a menos que você saiba o que está fazendo.
  *
- * Dev Gui </>
+ * @author Dev Gui
  */
-const { question, onlyNumbers } = require("./utils");
 const {
   default: makeWASocket,
   DisconnectReason,
@@ -21,15 +20,16 @@ const {
 } = require("baileys");
 const NodeCache = require("node-cache");
 const pino = require("pino");
-const {
-  warningLog,
-  infoLog,
-  errorLog,
-  sayLog,
-  successLog,
-} = require("./utils/logger");
 const { BAILEYS_CREDS_DIR } = require("./config");
 const { runLite } = require(".");
+const { onlyNumbers } = require("./utils/functions");
+const {
+  textInput,
+  infoLog,
+  warningLog,
+  errorLog,
+  bannerLog,
+} = require("./utils/terminal");
 
 const msgRetryCounterCache = new NodeCache();
 
@@ -67,12 +67,16 @@ async function startConnection() {
     getMessage,
   });
 
+  bannerLog();
+
   if (!socket.authState.creds.registered) {
     warningLog("Credenciais ainda não configuradas!");
 
-    infoLog('Informe o seu número de telefone (exemplo: "5511920202020"):');
+    infoLog(
+      'Informe o seu número do WhatsApp, somente números (exemplo: "5511920202020")'
+    );
 
-    const phoneNumber = await question("Informe o seu número de telefone: ");
+    const phoneNumber = await textInput("Informe o seu número de telefone: ");
 
     if (!phoneNumber) {
       errorLog(
@@ -84,7 +88,7 @@ async function startConnection() {
 
     const code = await socket.requestPairingCode(onlyNumbers(phoneNumber));
 
-    sayLog(`Código de pareamento: ${code}`);
+    infoLog(`Código de pareamento: ${code}`);
   }
 
   socket.ev.process(async (events) => {
@@ -127,9 +131,8 @@ async function startConnection() {
               break;
           }
 
-          startConnection().then(({ socket, events }) => {
-            runLite({ socket, events });
-          });
+          const newSocket = await startConnection();
+          runLite({ socket: newSocket, events });
         }
       } else if (connection === "open") {
         successLog("Fui conectado com sucesso!");
@@ -143,9 +146,7 @@ async function startConnection() {
     }
   });
 
-  return { socket, events };
+  return socket;
 }
 
-startConnection().then(({ socket, events }) => {
-  runLite({ socket, events });
-});
+startConnection();
