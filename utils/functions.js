@@ -4,18 +4,22 @@
  * Dev Gui </>
  */
 const { downloadContentFromMessage } = require("baileys");
-const { TEMP_DIR, PREFIX, BOT_EMOJI } = require("../config");
+const {
+  TEMP_DIR,
+  PREFIX,
+  BOT_EMOJI,
+  OWNER_NUMBER,
+  ASSETS_DIR,
+} = require("../config");
 const path = require("node:path");
 const fs = require("node:fs");
 const { writeFile } = require("node:fs/promises");
 const axios = require("axios");
 
-function loadLiteFunctions({ socket, data }) {
+function loadLiteFunctions({ socket: lite, data }) {
   if (!data?.messages?.length) {
     return null;
   }
-
-  const lite = socket;
 
   const info = data.messages[0];
 
@@ -180,6 +184,81 @@ function loadLiteFunctions({ socket, data }) {
     );
   };
 
+  const getProfileImageData = async (userJid) => {
+    let profileImage = "";
+    let buffer = null;
+    let success = true;
+
+    try {
+      profileImage = await lite.profilePictureUrl(userJid, "image");
+
+      buffer = await getBuffer(profileImage);
+
+      const tempImage = path.resolve(TEMP_DIR, getRandomName("png"));
+
+      fs.writeFileSync(tempImage, buffer);
+
+      profileImage = tempImage;
+    } catch (error) {
+      success = false;
+
+      profileImage = path.resolve(ASSETS_DIR, "images", "default-user.png");
+
+      buffer = fs.readFileSync(profileImage);
+    }
+
+    return { buffer, profileImage, success };
+  };
+
+  const isAdmin = async (jid) => {
+    try {
+      const { participants, owner } = await lite.groupMetadata(from);
+
+      const participant = participants.find(
+        (participant) => participant.id === jid
+      );
+
+      if (!participant) {
+        return false;
+      }
+
+      const isOwner =
+        participant.id === owner || participant.admin === "superadmin";
+
+      const isAdmin = participant.admin === "admin";
+
+      const isBotOwner =
+        userJid === `${onlyNumbers(OWNER_NUMBER)}@s.whatsapp.net`;
+
+      if (type === "admin") {
+        return isOwner || isAdmin || isBotOwner;
+      }
+
+      if (type === "owner") {
+        return isOwner || isBotOwner;
+      }
+
+      return false;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const deleteMessage = async (from, info) => {
+    await lite.sendMessage(from, {
+      delete: {
+        from,
+        fromMe: false,
+        id: info.key.id,
+        participant: info.key.participant,
+      },
+    });
+  };
+
+  const ban = async (from, userJid) => {
+    await lite.groupParticipantsUpdate(from, [userJid], "remove");
+  };
+
   return {
     args,
     body,
@@ -195,14 +274,18 @@ function loadLiteFunctions({ socket, data }) {
     prefix,
     replyJid,
     userJid,
+    ban,
     audioFromURL,
+    getProfileImageData,
     downloadImage,
     downloadSticker,
+    deleteMessage,
     downloadVideo,
     errorReact,
     errorReply,
     imageFromFile,
     imageFromURL,
+    isAdmin,
     react,
     reply,
     sendText,
@@ -291,6 +374,10 @@ function removeAccentsAndSpecialCharacters(text) {
 }
 
 function onlyNumbers(text) {
+  if (!text) {
+    return "";
+  }
+
   return text.replace(/[^0-9]/g, "");
 }
 
@@ -323,6 +410,10 @@ function getContent(info, context) {
   );
 }
 
+function checkPrefix(prefix) {
+  return PREFIX === prefix;
+}
+
 async function download(info, fileName, context, extension) {
   const content = this.getContent(info, context);
 
@@ -343,6 +434,12 @@ async function download(info, fileName, context, extension) {
   await writeFile(filePath, buffer);
 
   return filePath;
+}
+
+function isLink(text) {
+  const regex = /(https?:\/\/(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/\S*)?)/g;
+
+  return regex.test(text);
 }
 
 function toUserJid(number) {
@@ -386,6 +483,8 @@ module.exports = {
   getBuffer,
   getContent,
   getRandomName,
+  checkPrefix,
+  isLink,
   getRandomNumber,
   loadLiteFunctions,
   onlyLettersAndNumbers,
