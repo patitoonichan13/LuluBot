@@ -1,3 +1,8 @@
+/**
+ * Menus
+ *
+ * @author Dev Gui </>
+ */
 const { BOT_NAME, PREFIX } = require("../config");
 
 exports.menu = () => {

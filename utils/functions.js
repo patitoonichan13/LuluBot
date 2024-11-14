@@ -1,7 +1,11 @@
 /**
- * Funções comuns que são exportadas para facilitar o uso no index.js.
+ * Funções comuns que são exportadas
+ * para facilitar o uso no index.js.
+ * Não suje seu index.js com
+ * muitas linhas de código,
+ * separe as funções em arquivos separados.
  *
- * Dev Gui </>
+ * @author Dev Gui </>
  */
 const { downloadContentFromMessage } = require("baileys");
 const {
@@ -15,6 +19,7 @@ const path = require("node:path");
 const fs = require("node:fs");
 const { writeFile } = require("node:fs/promises");
 const axios = require("axios");
+const { errorLog } = require("./terminal");
 
 function loadLiteFunctions({ socket: lite, data }) {
   if (!data?.messages?.length) {
@@ -184,6 +189,58 @@ function loadLiteFunctions({ socket: lite, data }) {
     );
   };
 
+  const checkUserRole = async (jid, type) => {
+    try {
+      const { participants, owner } = await lite.groupMetadata(from);
+
+      const participant = participants.find(
+        (participant) => participant.id === jid
+      );
+
+      if (!participant) {
+        return false;
+      }
+
+      const isOwner =
+        participant.id === owner || participant.admin === "superadmin";
+
+      const isAdmin = participant.admin === "admin";
+
+      const isBotOwner =
+        userJid === `${onlyNumbers(OWNER_NUMBER)}@s.whatsapp.net`;
+
+      if (type === "owner") {
+        return isOwner || isBotOwner;
+      }
+
+      if (type === "admin") {
+        return isOwner || isBotOwner || isAdmin;
+      }
+
+      return false;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const isAdmin = async (jid) => checkUserRole(jid, "admin");
+  const isOwner = async (jid) => checkUserRole(jid, "owner");
+
+  const deleteMessage = async (from, info) => {
+    await lite.sendMessage(from, {
+      delete: {
+        from,
+        fromMe: false,
+        id: info.key.id,
+        participant: info.key.participant,
+      },
+    });
+  };
+
+  const ban = async (from, userJid) => {
+    await lite.groupParticipantsUpdate(from, [userJid], "remove");
+  };
+
   const getProfileImageData = async (userJid) => {
     let profileImage = "";
     let buffer = null;
@@ -205,58 +262,17 @@ function loadLiteFunctions({ socket: lite, data }) {
       profileImage = path.resolve(ASSETS_DIR, "images", "default-user.png");
 
       buffer = fs.readFileSync(profileImage);
+    } finally {
+      setTimeout(() => {
+        fs.unlink(profileImage, (error) => {
+          if (error) {
+            console.error("Error deleting profile image:", error);
+          }
+        });
+      }, 30_000);
     }
 
     return { buffer, profileImage, success };
-  };
-
-  const isAdmin = async (jid) => {
-    try {
-      const { participants, owner } = await lite.groupMetadata(from);
-
-      const participant = participants.find(
-        (participant) => participant.id === jid
-      );
-
-      if (!participant) {
-        return false;
-      }
-
-      const isOwner =
-        participant.id === owner || participant.admin === "superadmin";
-
-      const isAdmin = participant.admin === "admin";
-
-      const isBotOwner =
-        userJid === `${onlyNumbers(OWNER_NUMBER)}@s.whatsapp.net`;
-
-      if (type === "admin") {
-        return isOwner || isAdmin || isBotOwner;
-      }
-
-      if (type === "owner") {
-        return isOwner || isBotOwner;
-      }
-
-      return false;
-    } catch (error) {
-      return false;
-    }
-  };
-
-  const deleteMessage = async (from, info) => {
-    await lite.sendMessage(from, {
-      delete: {
-        from,
-        fromMe: false,
-        id: info.key.id,
-        participant: info.key.participant,
-      },
-    });
-  };
-
-  const ban = async (from, userJid) => {
-    await lite.groupParticipantsUpdate(from, [userJid], "remove");
   };
 
   return {
@@ -286,6 +302,7 @@ function loadLiteFunctions({ socket: lite, data }) {
     imageFromFile,
     imageFromURL,
     isAdmin,
+    isOwner,
     react,
     reply,
     sendText,
@@ -299,6 +316,19 @@ function loadLiteFunctions({ socket: lite, data }) {
     warningReact,
     warningReply,
   };
+}
+
+function deleteTempFile(file) {
+  try {
+    if (file && fs.existsSync(file)) {
+      fs.unlinkSync(file);
+    }
+  } catch (error) {
+    errorLog(
+      "Erro ao deletar arquivo temporário\n\n",
+      JSON.stringify(error, null, 2)
+    );
+  }
 }
 
 function extractDataFromInfo(info) {
@@ -467,6 +497,16 @@ function getBuffer(url, options) {
   });
 }
 
+async function getJSON(url, options) {
+  try {
+    const { data } = await axios.get(url, options);
+
+    return data;
+  } catch (error) {
+    return null;
+  }
+}
+
 function getRandomName(extension) {
   const fileName = getRandomNumber(0, 999999);
 
@@ -478,14 +518,15 @@ function getRandomName(extension) {
 }
 
 module.exports = {
+  checkPrefix,
+  deleteTempFile,
   download,
   formatCommand,
   getBuffer,
   getContent,
   getRandomName,
-  checkPrefix,
-  isLink,
   getRandomNumber,
+  isLink,
   loadLiteFunctions,
   onlyLettersAndNumbers,
   onlyNumbers,

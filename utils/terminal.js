@@ -1,7 +1,7 @@
 /**
  * Funções de log e interação com o terminal.
  *
- * Dev Gui </>
+ * @author Dev Gui </>
  */
 const { version } = require("../package.json");
 const { BOT_NAME } = require("../config");

@@ -29,7 +29,10 @@ const {
   deactivateAntiLinkGroup,
   isActiveAntiLinkGroup,
   activateWelcomeGroup,
+  isActiveGroup,
   deactivateWelcomeGroup,
+  activateGroup,
+  deactivateGroup,
 } = require("./database/db");
 
 async function runLite({ socket, data }) {
@@ -75,9 +78,14 @@ async function runLite({ socket, data }) {
     deleteMessage,
     waitReact,
     waitReply,
+    isOwner,
     warningReact,
     warningReply,
   } = functions;
+
+  if (!isActiveGroup(from) && !(await isOwner(userJid))) {
+    return;
+  }
 
   if (!checkPrefix(prefix)) {
     /**
@@ -129,12 +137,15 @@ async function runLite({ socket, data }) {
      * outros bots para cá
      * sem saber o que está fazendo.
      *
-     * Cada bot tem suas particularidades e,
-     * por isso,
-     * é importante tomar cuidado.
-     * Não nos responsabilizamos por problemas
+     * Cada bot tem suas
+     * particularidades e,
+     * por isso, é importante
+     * tomar cuidado.
+     * Não nos responsabilizamos
+     * por problemas
      * que possam ocorrer ao
-     * trazer códigos de outros bots pra cá,
+     * trazer códigos de outros
+     * bots pra cá,
      * na tentativa de adaptação.
      *
      * Toda ajuda será *COBRADA*
@@ -235,6 +246,28 @@ async function runLite({ socket, data }) {
           path.join(ASSETS_DIR, "images", "menu.png"),
           `\n\n${menu()}`
         );
+        break;
+      case "off":
+        if (!(await isOwner(userJid))) {
+          throw new DangerError(
+            "Você não tem permissão para executar este comando!"
+          );
+        }
+
+        deactivateGroup(from);
+
+        await successReply("Bot desativado no grupo!");
+        break;
+      case "on":
+        if (!(await isOwner(userJid))) {
+          throw new DangerError(
+            "Você não tem permissão para executar este comando!"
+          );
+        }
+
+        activateGroup(from);
+
+        await successReply("Bot ativado no grupo!");
         break;
       case "ping":
         await react("🏓");
