@@ -41,7 +41,7 @@ curl -O https://spiderx.com.br/lite-bot.sh && sh lite-bot.sh
 
 6 - Aguarde 10 segundos, depois digite `CTRL + C` 2x para parar o bot.
 
-7 - Configure o arquivo `config.js` que está dentro da pasta `src`. O bot fica dentro da pasta `/sdcard/DevGui/lite-bot`.
+7 - Configure o arquivo `config.js`. O bot fica dentro da pasta `/sdcard/DevGui/lite-bot`.
 
 ```js
 // Prefixo dos comandos
@@ -73,7 +73,7 @@ npm start
 
 ## Alguns comandos necessitam de API
 
-Edite a linha `34` do arquivo `./src/config.js` e cole sua api key da plataforma Spider X API.<br/>
+Edite a linha `34` do arquivo `config.js` e cole sua api key da plataforma Spider X API.<br/>
 Para obter seu token, acesse: [https://api.spiderx.com.br](https://api.spiderx.com.br) e crie sua conta gratuitamente!
 
 ```js
