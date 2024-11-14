@@ -13,21 +13,38 @@
  */
 const path = require("node:path");
 const { menu } = require("./utils/menu");
-const {
-  loadLiteFunctions,
-  toUserJid,
-  onlyNumbers,
-  removeAccentsAndSpecialCharacters,
-  checkPrefix,
-  deleteTempFile,
-} = require("./utils/functions");
-const { ASSETS_DIR, BOT_NUMBER, TEMP_DIR } = require("./config");
+const { ASSETS_DIR, BOT_NUMBER } = require("./config");
 const { errorLog } = require("./utils/terminal");
+const { attp, gpt4, playAudio } = require("./services/spider-x-api");
+const { consultarCep } = require("correios-brasil/dist");
+const { image } = require("./services/hercai");
+
 const {
   InvalidParameterError,
   WarningError,
   DangerError,
 } = require("./errors");
+
+const {
+  checkPrefix,
+  deleteTempFile,
+  download,
+  formatCommand,
+  getBuffer,
+  getContent,
+  getJSON,
+  getProfileImageData,
+  getRandomName,
+  getRandomNumber,
+  isLink,
+  loadLiteFunctions,
+  onlyLettersAndNumbers,
+  onlyNumbers,
+  removeAccentsAndSpecialCharacters,
+  splitByCharacters,
+  toUserJid,
+} = require("./utils/functions");
+
 const {
   activateAntiLinkGroup,
   deactivateAntiLinkGroup,
@@ -38,10 +55,6 @@ const {
   activateGroup,
   deactivateGroup,
 } = require("./database/db");
-const { attp, gpt4, playAudio } = require("./services/spider-x-api");
-const { consultarCep } = require("correios-brasil/dist");
-const { Hercai } = require("hercai");
-const { image } = require("./services/hercai");
 
 async function runLite({ socket, data }) {
   const functions = loadLiteFunctions({ socket, data });
@@ -65,8 +78,9 @@ async function runLite({ socket, data }) {
     prefix,
     replyJid,
     userJid,
-    ban,
     audioFromURL,
+    ban,
+    deleteMessage,
     downloadImage,
     downloadSticker,
     downloadVideo,
@@ -74,20 +88,21 @@ async function runLite({ socket, data }) {
     errorReply,
     imageFromFile,
     imageFromURL,
-    isAdmin,
-    react,
-    reply,
     infoFromSticker,
+    isAdmin,
+    isOwner,
+    react,
+    recordState,
+    reply,
     sendText,
     stickerFromFile,
     stickerFromURL,
     successReact,
     successReply,
+    typingState,
     videoFromURL,
-    deleteMessage,
     waitReact,
     waitReply,
-    isOwner,
     warningReact,
     warningReply,
   } = functions;
@@ -405,6 +420,8 @@ async function runLite({ socket, data }) {
             "Você precisa marcar uma imagem/gif/vídeo ou responder a uma imagem/gif/vídeo"
           );
         }
+
+        await waitReact();
         await infoFromSticker(info);
         break;
       case "welcome":
@@ -456,17 +473,11 @@ async function runLite({ socket, data }) {
     } else if (error instanceof DangerError) {
       await errorReply(error.message);
     } else {
-      errorLog(
-        `Erro ao executar comando\n\nDetalhes: ${JSON.stringify(
-          error,
-          null,
-          2
-        )}`
-      );
+      errorLog(`Erro ao executar comando!\n\nDetalhes: ${error.message}`);
 
       await errorReply(
-        `Ocorreu um erro ao executar o comando ${command.name}! O desenvolvedor foi notificado!
-      
+        `Ocorreu um erro ao executar o comando ${command.name}!
+
 📄 *Detalhes*: ${error.message}`
       );
     }

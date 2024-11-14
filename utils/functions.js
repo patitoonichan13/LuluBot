@@ -11,13 +11,14 @@ const path = require("node:path");
 const fs = require("node:fs");
 const { writeFile } = require("node:fs/promises");
 
-const { downloadContentFromMessage } = require("baileys");
+const { downloadContentFromMessage, delay } = require("baileys");
 const {
   TEMP_DIR,
   PREFIX,
   BOT_EMOJI,
   OWNER_NUMBER,
   ASSETS_DIR,
+  TIMEOUT_IN_MILLISECONDS_BY_ACTION,
 } = require("../config");
 const axios = require("axios");
 const { errorLog } = require("./terminal");
@@ -63,12 +64,27 @@ function loadLiteFunctions({ socket: lite, data }) {
     return await download(info, fileName, "video", "mp4");
   };
 
+  const typingState = async () => {
+    await delay(TIMEOUT_IN_MILLISECONDS_BY_ACTION);
+    await lite.sendPresenceUpdate("composing", from);
+    await delay(TIMEOUT_IN_MILLISECONDS_BY_ACTION);
+  };
+
+  const recordState = async () => {
+    await delay(TIMEOUT_IN_MILLISECONDS_BY_ACTION);
+    await lite.sendPresenceUpdate("recording", sendToJid);
+    await delay(TIMEOUT_IN_MILLISECONDS_BY_ACTION);
+  };
+
   const sendText = async (text, mentions) => {
     let optionalParams = {};
 
     if (mentions?.length) {
       optionalParams = { mentions };
     }
+
+    await typingState();
+    await delay(TIMEOUT_IN_MILLISECONDS_BY_ACTION);
 
     return await lite.sendMessage(from, {
       text: `${BOT_EMOJI} ${text}`,
@@ -77,6 +93,8 @@ function loadLiteFunctions({ socket: lite, data }) {
   };
 
   const reply = async (text) => {
+    await typingState();
+
     return await lite.sendMessage(
       from,
       { text: `${BOT_EMOJI} ${text}` },
@@ -325,26 +343,28 @@ Envie um vídeo menor!`
     prefix,
     replyJid,
     userJid,
-    ban,
     audioFromURL,
+    ban,
     deleteMessage,
     downloadImage,
     downloadSticker,
     downloadVideo,
     errorReact,
     errorReply,
-    infoFromSticker,
     imageFromFile,
     imageFromURL,
+    infoFromSticker,
     isAdmin,
     isOwner,
     react,
+    recordState,
     reply,
     sendText,
     stickerFromFile,
     stickerFromURL,
     successReact,
     successReply,
+    typingState,
     videoFromURL,
     waitReact,
     waitReply,
@@ -510,7 +530,7 @@ async function getProfileImageData(userJid, lite) {
 }
 
 async function download(info, fileName, context, extension) {
-  const content = this.getContent(info, context);
+  const content = getContent(info, context);
 
   if (!content) {
     return null;
@@ -587,9 +607,10 @@ module.exports = {
   deleteTempFile,
   download,
   formatCommand,
-  getProfileImageData,
   getBuffer,
   getContent,
+  getJSON,
+  getProfileImageData,
   getRandomName,
   getRandomNumber,
   isLink,

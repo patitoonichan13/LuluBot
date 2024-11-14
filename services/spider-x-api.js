@@ -4,9 +4,11 @@ const { SPIDER_API_TOKEN, SPIDER_API_BASE_URL } = require("../config");
 const { DangerError } = require("../errors");
 
 const tokenErrorMessage = `Token da API do Spider X não configurado!\n
-Para configurar, acesse o arquivo config.js 
-e adicione o token da API do Spider X (https://api.spiderx.com.br)
-na variável SPIDER_API_TOKEN.`;
+Para configurar, acesse o arquivo \`config.js\` 
+e adicione o token da API do Spider X!\n
+Não tem o token? Crie sua conta
+em: https://api.spiderx.com.br.
+na variável \`SPIDER_API_TOKEN\`.`;
 
 function hasToken(token) {
   return token && token !== "seu_token_aqui";
@@ -73,7 +75,7 @@ async function attp(text) {
   }
 
   if (!hasToken(SPIDER_API_TOKEN)) {
-    throw new DangerError(`Token da API do Spider X não configurado!`);
+    throw new DangerError(tokenErrorMessage);
   }
 
   return `${SPIDER_API_BASE_URL}/stickers/attp?text=${encodeURIComponent(

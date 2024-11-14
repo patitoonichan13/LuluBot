@@ -33,25 +33,34 @@ const backgroundColor = {
 
 function infoLog(message) {
   console.log(
-    `\x1b[${backgroundColor.cyan}m[\x1b[${textColor.cyan}m🤖 ${botName} INFO\x1b[0m\x1b[${backgroundColor.cyan}m]\x1b[0m \x1b[${textColor.cyan}m${message}\x1b[0m`
+    `\x1b[${backgroundColor.cyan}m[\x1b[${textColor.cyan}m🤖 ${botName}: INFO\x1b[0m\x1b[${backgroundColor.cyan}m]\x1b[0m \x1b[${textColor.cyan}m${message}\x1b[0m`
   );
 }
 
 function errorLog(message) {
   console.log(
-    `\x1b[${backgroundColor.red}m\x1b[${textColor.red}m🔥 ${botName} ERRO\x1b[0m\x1b[${backgroundColor.red}m]\x1b[0m \x1b[${textColor.red}m${message}\x1b[0m`
+    `\x1b[${backgroundColor.red}m\x1b[${textColor.red}m🔥 ${botName}: ERRO\x1b[0m\x1b[${backgroundColor.red}m]\x1b[0m \x1b[${textColor.red}m${message}\x1b[0m`
   );
 }
 
 function successLog(message) {
   console.log(
-    `\x1b[${backgroundColor.green}m[\x1b[${textColor.green}m🎉 ${botName} SUCESSO\x1b[0m\x1b[${backgroundColor.green}m]\x1b[0m \x1b[${textColor.green}m${message}\x1b[0m`
+    `\x1b[${backgroundColor.green}m[\x1b[${textColor.green}m🎉 ${botName}: SUCESSO\x1b[0m\x1b[${backgroundColor.green}m]\x1b[0m \x1b[${textColor.green}m${message}\x1b[0m`
   );
 }
 
 function warningLog(message) {
   console.log(
-    `\x1b[${backgroundColor.yellow}m[\x1b[${textColor.yellow}m☢ ${botName} ATENÇÃO\x1b[0m\x1b[${backgroundColor.yellow}m]\x1b[0m \x1b[${textColor.yellow}m${message}\x1b[0m`
+    `\x1b[${backgroundColor.yellow}m[\x1b[${textColor.yellow}m☢ ${botName}: ATENÇÃO\x1b[0m\x1b[${backgroundColor.yellow}m]\x1b[0m \x1b[${textColor.yellow}m${message}\x1b[0m`
+  );
+}
+
+function tutorLog(message, color = "magenta") {
+  const localTextColor = textColor[color];
+  const localBackgroundColor = backgroundColor[color];
+
+  console.log(
+    `\x1b[${localBackgroundColor}m[\x1b[${localTextColor}m🎓 ${botName}: TUTOR\x1b[0m\x1b[${localBackgroundColor}m]\x1b[0m \x1b[${localTextColor}m${message}\x1b[0m`
   );
 }
 
@@ -70,15 +79,18 @@ async function textInput(message) {
 
   return new Promise((resolve) =>
     rl.question(
-      `\x1b[${backgroundColor.magenta}m[\x1b[${textColor.magenta}m🤖 ${botName} INPUT\x1b[0m\x1b[${backgroundColor.magenta}m]\x1b[0m \x1b[${textColor.magenta}m${message}\x1b[0m`,
+      `\x1b[${backgroundColor.magenta}m[\x1b[${textColor.magenta}m🤖 ${botName}: INPUT\x1b[0m\x1b[${backgroundColor.magenta}m]\x1b[0m \x1b[${textColor.magenta}m${message}\x1b[0m`,
       resolve
     )
   );
 }
 module.exports = {
+  backgroundColor,
+  textColor,
   bannerLog,
   errorLog,
   infoLog,
+  tutorLog,
   successLog,
   warningLog,
   textInput,

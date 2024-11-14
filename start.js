@@ -24,6 +24,7 @@ const {
   proto,
   makeInMemoryStore,
   isJidNewsletter,
+  delay,
 } = require("baileys");
 const NodeCache = require("node-cache");
 const pino = require("pino");
@@ -36,6 +37,7 @@ const {
   warningLog,
   errorLog,
   successLog,
+  tutorLog,
   bannerLog,
 } = require("./utils/terminal");
 
@@ -86,11 +88,69 @@ async function startConnection() {
 
     if (!phoneNumber) {
       errorLog(
-        'Número de telefone inválido! Tente novamente com o comando "yarn start".'
+        'Número de telefone inválido! Tente novamente com o comando "yarn start" ou "npm start".'
       );
 
       process.exit(1);
     }
+
+    await delay(1000);
+
+    tutorLog("Estamos gerando seu código... lembre-se:\n");
+
+    await delay(5000);
+
+    tutorLog(
+      `1. Depois que colar o código no WhatsApp, aguarde 10 segundos e depois pare o bot com CTRL + C.
+      
+⌛ Gerando código, aguarde.. 25% concluído.\n`
+    );
+
+    await delay(10_000);
+
+    tutorLog(
+      `2. Depois de parar o bot, 
+abra o MT Manager ou ZArchiver na pasta:
+
+📁 DevGui
+    📁 lite-bot  
+    
+Abra o arquivo config.js e configure:
+
+- Seu prefixo ( o padrão é: / )
+- Número do bot
+- Número do dono do bot
+
+⌛ Gerando código, aguarde... 50% concluído.\n`,
+      "cyan"
+    );
+
+    await delay(10_000);
+
+    tutorLog(
+      `3. Depois, abra o termux e digite:
+      
+cd /sdcard/DevGui/lite-bot
+
+⌛ Gerando código, aguarde... 75% concluído.\n`
+    );
+
+    await delay(10_000);
+
+    tutorLog(
+      `4. Por último, inicie o bot com:
+
+yarn start
+
+ou
+
+npm start
+
+✅ Geração concluída! Enviando código...\n`,
+      "green"
+    );
+
+    await delay(5_000);
 
     const code = await socket.requestPairingCode(onlyNumbers(phoneNumber));
 
@@ -138,8 +198,6 @@ async function startConnection() {
       }
     } else if (connection === "open") {
       successLog("Fui conectado com sucesso!");
-    } else {
-      successLog("Conexão estabelecida!");
     }
   });
 
