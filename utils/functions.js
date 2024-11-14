@@ -7,6 +7,10 @@
  *
  * @author Dev Gui </>
  */
+const path = require("node:path");
+const fs = require("node:fs");
+const { writeFile } = require("node:fs/promises");
+
 const { downloadContentFromMessage } = require("baileys");
 const {
   TEMP_DIR,
@@ -15,11 +19,10 @@ const {
   OWNER_NUMBER,
   ASSETS_DIR,
 } = require("../config");
-const path = require("node:path");
-const fs = require("node:fs");
-const { writeFile } = require("node:fs/promises");
 const axios = require("axios");
 const { errorLog } = require("./terminal");
+const { exec } = require("node:child_process");
+const { DangerError } = require("../errors");
 
 function loadLiteFunctions({ socket: lite, data }) {
   if (!data?.messages?.length) {
@@ -157,6 +160,72 @@ function loadLiteFunctions({ socket: lite, data }) {
     );
   };
 
+  const infoFromSticker = async (info) => {
+    const outputPath = path.resolve(TEMP_DIR, getRandomName("webp"));
+
+    if (isImage) {
+      const inputPath = await downloadImage(info, "input");
+
+      exec(
+        `ffmpeg -i ${inputPath} -vf scale=512:512 ${outputPath}`,
+        async (error) => {
+          if (error) {
+            deleteTempFile(inputPath);
+            throw new DangerError(
+              "Erro ao converter imagem para sticker!\n\n",
+              JSON.stringify(error, null, 2)
+            );
+          }
+
+          await successReact();
+          await stickerFromFile(outputPath);
+
+          deleteTempFile(inputPath);
+        }
+      );
+    } else {
+      const inputPath = await downloadVideo(info, "input");
+
+      const sizeInSeconds = 10;
+
+      const seconds =
+        info.message?.videoMessage?.seconds ||
+        info.message?.extendedTextMessage?.contextInfo?.quotedMessage
+          ?.videoMessage?.seconds;
+
+      const haveSecondsRule = seconds <= sizeInSeconds;
+
+      if (!haveSecondsRule) {
+        deleteTempFile(inputPath);
+
+        throw new DangerError(
+          `O vídeo que você enviou tem mais de ${sizeInSeconds} segundos!
+
+Envie um vídeo menor!`
+        );
+      }
+
+      exec(
+        `ffmpeg -i ${inputPath} -y -vcodec libwebp -fs 0.99M -filter_complex "[0:v] scale=512:512,fps=12,pad=512:512:-1:-1:color=white@0.0,split[a][b];[a]palettegen=reserve_transparent=on:transparency_color=ffffff[p];[b][p]paletteuse" -f webp ${outputPath}`,
+        async (error) => {
+          if (error) {
+            deleteTempFile(inputPath);
+            throw new DangerError(
+              "Erro ao converter vídeo para sticker!\n\n",
+              JSON.stringify(error, null, 2)
+            );
+          }
+
+          await successReact();
+          await stickerFromFile(outputPath);
+
+          fs.unlinkSync(inputPath);
+          fs.unlinkSync(outputPath);
+        }
+      );
+    }
+  };
+
   const imageFromURL = async (url, caption = "") => {
     return await lite.sendMessage(
       from,
@@ -241,40 +310,6 @@ function loadLiteFunctions({ socket: lite, data }) {
     await lite.groupParticipantsUpdate(from, [userJid], "remove");
   };
 
-  const getProfileImageData = async (userJid) => {
-    let profileImage = "";
-    let buffer = null;
-    let success = true;
-
-    try {
-      profileImage = await lite.profilePictureUrl(userJid, "image");
-
-      buffer = await getBuffer(profileImage);
-
-      const tempImage = path.resolve(TEMP_DIR, getRandomName("png"));
-
-      fs.writeFileSync(tempImage, buffer);
-
-      profileImage = tempImage;
-    } catch (error) {
-      success = false;
-
-      profileImage = path.resolve(ASSETS_DIR, "images", "default-user.png");
-
-      buffer = fs.readFileSync(profileImage);
-    } finally {
-      setTimeout(() => {
-        fs.unlink(profileImage, (error) => {
-          if (error) {
-            console.error("Error deleting profile image:", error);
-          }
-        });
-      }, 30_000);
-    }
-
-    return { buffer, profileImage, success };
-  };
-
   return {
     args,
     body,
@@ -292,13 +327,13 @@ function loadLiteFunctions({ socket: lite, data }) {
     userJid,
     ban,
     audioFromURL,
-    getProfileImageData,
+    deleteMessage,
     downloadImage,
     downloadSticker,
-    deleteMessage,
     downloadVideo,
     errorReact,
     errorReply,
+    infoFromSticker,
     imageFromFile,
     imageFromURL,
     isAdmin,
@@ -316,19 +351,6 @@ function loadLiteFunctions({ socket: lite, data }) {
     warningReact,
     warningReply,
   };
-}
-
-function deleteTempFile(file) {
-  try {
-    if (file && fs.existsSync(file)) {
-      fs.unlinkSync(file);
-    }
-  } catch (error) {
-    errorLog(
-      "Erro ao deletar arquivo temporário\n\n",
-      JSON.stringify(error, null, 2)
-    );
-  }
 }
 
 function extractDataFromInfo(info) {
@@ -411,6 +433,21 @@ function onlyNumbers(text) {
   return text.replace(/[^0-9]/g, "");
 }
 
+function deleteTempFile(file) {
+  setTimeout(() => {
+    try {
+      if (file && fs.existsSync(file)) {
+        fs.unlinkSync(file);
+      }
+    } catch (error) {
+      errorLog(
+        "Erro ao deletar arquivo temporário!\n\n",
+        JSON.stringify(error, null, 2)
+      );
+    }
+  }, 30_000);
+}
+
 function formatCommand(text) {
   return onlyLettersAndNumbers(
     removeAccentsAndSpecialCharacters(text.toLocaleLowerCase().trim())
@@ -442,6 +479,34 @@ function getContent(info, context) {
 
 function checkPrefix(prefix) {
   return PREFIX === prefix;
+}
+
+async function getProfileImageData(userJid, lite) {
+  let profileImage = "";
+  let buffer = null;
+  let success = true;
+
+  try {
+    profileImage = await lite.profilePictureUrl(userJid, "image");
+
+    buffer = await getBuffer(profileImage);
+
+    const tempImage = path.resolve(TEMP_DIR, getRandomName("png"));
+
+    fs.writeFileSync(tempImage, buffer);
+
+    profileImage = tempImage;
+  } catch (error) {
+    success = false;
+
+    profileImage = path.resolve(ASSETS_DIR, "images", "default-user.png");
+
+    buffer = fs.readFileSync(profileImage);
+  } finally {
+    deleteTempFile(profileImage);
+  }
+
+  return { buffer, profileImage, success };
 }
 
 async function download(info, fileName, context, extension) {
@@ -522,6 +587,7 @@ module.exports = {
   deleteTempFile,
   download,
   formatCommand,
+  getProfileImageData,
   getBuffer,
   getContent,
   getRandomName,

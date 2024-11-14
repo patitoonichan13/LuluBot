@@ -1,10 +1,13 @@
 /**
  * Este script é responsável
  * pelas funções que
- * serão executadas no Lite Bot.
+ * serão executadas
+ * no Lite Bot.
  *
- * Aqui é onde você vai definir
- * o que o seu bot vai fazer.
+ * Aqui é onde você
+ * vai definir
+ * o que o seu bot
+ * vai fazer.
  *
  * @author Dev Gui
  */
@@ -16,8 +19,9 @@ const {
   onlyNumbers,
   removeAccentsAndSpecialCharacters,
   checkPrefix,
+  deleteTempFile,
 } = require("./utils/functions");
-const { ASSETS_DIR, BOT_NUMBER } = require("./config");
+const { ASSETS_DIR, BOT_NUMBER, TEMP_DIR } = require("./config");
 const { errorLog } = require("./utils/terminal");
 const {
   InvalidParameterError,
@@ -34,6 +38,10 @@ const {
   activateGroup,
   deactivateGroup,
 } = require("./database/db");
+const { attp, gpt4, playAudio } = require("./services/spider-x-api");
+const { consultarCep } = require("correios-brasil/dist");
+const { Hercai } = require("hercai");
+const { image } = require("./services/hercai");
 
 async function runLite({ socket, data }) {
   const functions = loadLiteFunctions({ socket, data });
@@ -69,6 +77,7 @@ async function runLite({ socket, data }) {
     isAdmin,
     react,
     reply,
+    infoFromSticker,
     sendText,
     stickerFromFile,
     stickerFromURL,
@@ -184,6 +193,21 @@ async function runLite({ socket, data }) {
 
         await reply(`Recurso de anti-link ${antiLinkContext} com sucesso!`);
         break;
+      case "attp":
+        if (!args.length) {
+          throw new InvalidParameterError(
+            "Você precisa informar o texto que deseja transformar em figurinha."
+          );
+        }
+
+        await waitReact();
+
+        const url = await attp(args[0].trim());
+
+        await successReact();
+
+        await stickerFromURL(url);
+        break;
       case "ban":
       case "banir":
       case "kick":
@@ -219,20 +243,59 @@ async function runLite({ socket, data }) {
           throw new DangerError("Você não pode me remover!");
         }
 
-        await lite.groupParticipantsUpdate(
-          remoteJid,
-          [memberToRemoveJid],
-          "remove"
-        );
+        await ban(from, memberToRemoveJid);
 
         await successReact();
 
         await reply("Membro removido com sucesso!");
         break;
+      case "cep":
+        const cep = args[0];
+
+        if (!cep || ![8, 9].includes(cep.length)) {
+          throw new InvalidParameterError(
+            "Você precisa enviar um CEP no formato 00000-000 ou 00000000!"
+          );
+        }
+
+        const data = await consultarCep(cep);
+
+        if (!data.cep) {
+          await warningReply("CEP não encontrado!");
+          return;
+        }
+
+        await successReply(`*Resultado*
+        
+*CEP*: ${data.cep}
+*Logradouro*: ${data.logradouro}
+*Complemento*: ${data.complemento}
+*Bairro*: ${data.bairro}
+*Localidade*: ${data.localidade}
+*UF*: ${data.uf}
+*IBGE*: ${data.ibge}`);
+        break;
+      case "gpt":
+      case "ia":
+      case "lite":
+        const text = args[0];
+
+        if (!text) {
+          throw new InvalidParameterError(
+            "Você precisa me dizer o que eu devo responder!"
+          );
+        }
+
+        await waitReact();
+
+        const responseText = await gpt4(text);
+
+        await successReply(responseText);
+        break;
       case "hidetag":
       case "tagall":
       case "marcar":
-        const { participants } = await lite.groupMetadata(remoteJid);
+        const { participants } = await lite.groupMetadata(from);
 
         const mentions = participants.map(({ id }) => id);
 
@@ -258,6 +321,21 @@ async function runLite({ socket, data }) {
 
         await successReply("Bot desativado no grupo!");
         break;
+      case "image":
+        if (!fullArgs.length) {
+          throw new WarningError(
+            "Por favor, forneça uma descrição para gerar a imagem."
+          );
+        }
+
+        await waitReact();
+
+        const response = await image(fullArgs);
+
+        await successReact();
+
+        await imageFromURL(response.url);
+        break;
       case "on":
         if (!(await isOwner(userJid))) {
           throw new DangerError(
@@ -272,6 +350,62 @@ async function runLite({ socket, data }) {
       case "ping":
         await react("🏓");
         await reply("🏓 Pong!");
+        break;
+      case "play-audio":
+      case "play-yt":
+      case "play":
+        if (!args.length) {
+          throw new InvalidParameterError(
+            "Você precisa me dizer o que deseja buscar!"
+          );
+        }
+
+        await waitReact();
+
+        const playAudioData = await playAudio(args[0]);
+
+        if (!playAudioData) {
+          await errorReply("Nenhum resultado encontrado!");
+          return;
+        }
+
+        await successReact();
+
+        await audioFromURL(playAudioData.url);
+
+        break;
+      case "playvideo":
+        if (!args.length) {
+          throw new InvalidParameterError(
+            "Você precisa me dizer o que deseja buscar!"
+          );
+        }
+
+        await waitReact();
+
+        const playVideoData = await playVideo(args[0]);
+
+        if (!playVideoData) {
+          await errorReply("Nenhum resultado encontrado!");
+          return;
+        }
+
+        await successReact();
+
+        await videoFromURL(playVideoData.url);
+
+        break;
+      case "sticker":
+      case "f":
+      case "fig":
+      case "figu":
+      case "s":
+        if (!isImage && !isVideo) {
+          throw new InvalidParameterError(
+            "Você precisa marcar uma imagem/gif/vídeo ou responder a uma imagem/gif/vídeo"
+          );
+        }
+        await infoFromSticker(info);
         break;
       case "welcome":
       case "bemvindo":
@@ -329,6 +463,7 @@ async function runLite({ socket, data }) {
           2
         )}`
       );
+
       await errorReply(
         `Ocorreu um erro ao executar o comando ${command.name}! O desenvolvedor foi notificado!
       
@@ -339,4 +474,4 @@ async function runLite({ socket, data }) {
   }
 }
 
-exports.runLite = runLite;
+module.exports = { runLite };

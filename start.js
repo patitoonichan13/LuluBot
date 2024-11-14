@@ -1,9 +1,16 @@
 /**
- * Script de inicialização do bot.
+ * Script de
+ * inicialização do bot.
  *
- * Este script é responsável por iniciar a conexão com o WhatsApp.
+ * Este script é
+ * responsável por
+ * iniciar a conexão
+ * com o WhatsApp.
  *
- * Não é recomendado alterar este arquivo, a menos que você saiba o que está fazendo.
+ * Não é recomendado alterar
+ * este arquivo,
+ * a menos que você saiba
+ * o que está fazendo.
  *
  * @author Dev Gui
  */
@@ -139,6 +146,10 @@ async function startConnection() {
   socket.ev.on("creds.update", saveCreds);
   socket.ev.on("messages.upsert", (data) => {
     runLite({ socket, data });
+  });
+
+  socket.ev.on("group-participants.update", (data) => {
+    welcome({ socket, data });
   });
 
   return socket;

@@ -1,8 +1,9 @@
 /**
- * Arquivo pra rodar alguns testes, nada demais.
+ * Arquivo pra rodar alguns testes,
+ * nada demais.
  *
  * @author Dev Gui
  */
 (async () => {
-  console.log("Apenas testando", "color: red");
+  console.log("Apenas testando");
 })();
