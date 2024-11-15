@@ -65,12 +65,15 @@ async function textInput(message) {
     output: process.stdout,
   });
 
-  return new Promise((resolve) =>
+  return new Promise((resolve) => {
     rl.question(
-      `\x1b[${textColor.magenta}m[🤖 ${botName}: INPUT]\x1b[0m \x1b[${textColor.magenta}m${message}\x1b[0m`,
-      resolve
-    )
-  );
+      `\x1b[${textColor.magenta}m[🤖 ${botName}: INPUT]\x1b[0m \x1b[${textColor.magenta}m${message}\x1b[0m `,
+      (answer) => {
+        rl.close();
+        resolve(answer);
+      }
+    );
+  });
 }
 
 module.exports = {
