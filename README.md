@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="./assets/images/lite-bot-logo.png" width="500">
+    <img src="./assets/images/menu.png" width="500">
 </div>
 
 <br />
