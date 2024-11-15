@@ -47,7 +47,7 @@ cd /sdcard && git clone https://github.com/guiireal/lite-bot.git && cd ./lite-bo
 
 7 - Aguarde 10 segundos, depois digite `CTRL + C` 2x para parar o bot.
 
-8 - Configure o arquivo `config.js`. O bot fica dentro da pasta `/sdcard/DevGui/lite-bot`.
+8 - Configure o arquivo `config.js`. O bot fica dentro da pasta `/sdcard/lite-bot`.
 
 ```js
 // Prefixo dos comandos
