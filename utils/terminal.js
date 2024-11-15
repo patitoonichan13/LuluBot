@@ -39,7 +39,7 @@ function infoLog(message) {
 
 function errorLog(message) {
   console.log(
-    `\x1b[${backgroundColor.red}m\x1b[${textColor.red}m🔥 ${botName}: ERRO\x1b[0m\x1b[${backgroundColor.red}m]\x1b[0m \x1b[${textColor.red}m${message}\x1b[0m`
+    `\x1b[${backgroundColor.red}m[\x1b[${textColor.red}m🔥 ${botName}: ERRO\x1b[0m\x1b[${backgroundColor.red}m]\x1b[0m \x1b[${textColor.red}m${message}\x1b[0m`
   );
 }
 

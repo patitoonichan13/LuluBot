@@ -40,12 +40,15 @@ const {
   tutorLog,
   bannerLog,
 } = require("./utils/terminal");
+const { welcome } = require("./welcome");
 
 const msgRetryCounterCache = new NodeCache();
 
 const store = makeInMemoryStore({
   logger: pino().child({ level: "silent", stream: "store" }),
 });
+
+bannerLog();
 
 async function startConnection() {
   const { state, saveCreds } = await useMultiFileAuthState(BAILEYS_CREDS_DIR);
@@ -74,8 +77,6 @@ async function startConnection() {
       return msg ? msg.message : undefined;
     },
   });
-
-  bannerLog();
 
   if (!socket.authState.creds.registered) {
     warningLog("Credenciais ainda não configuradas!");

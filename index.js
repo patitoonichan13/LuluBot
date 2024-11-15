@@ -15,7 +15,7 @@ const path = require("node:path");
 const { menu } = require("./utils/menu");
 const { ASSETS_DIR, BOT_NUMBER } = require("./config");
 const { errorLog } = require("./utils/terminal");
-const { attp, gpt4, playAudio } = require("./services/spider-x-api");
+const { attp, gpt4, playAudio, playVideo } = require("./services/spider-x-api");
 const { consultarCep } = require("correios-brasil/dist");
 const { image } = require("./services/hercai");
 
@@ -80,7 +80,6 @@ async function runLite({ socket, data }) {
     userJid,
     audioFromURL,
     ban,
-    deleteMessage,
     downloadImage,
     downloadSticker,
     downloadVideo,
@@ -145,7 +144,6 @@ async function runLite({ socket, data }) {
   ) {
     await ban(from, userJid);
     await reply("Anti-link ativado! Você foi removido por enviar um link!");
-    await deleteMessage(from, info);
 
     return;
   }
@@ -290,6 +288,7 @@ async function runLite({ socket, data }) {
 *UF*: ${data.uf}
 *IBGE*: ${data.ibge}`);
         break;
+      case "gpt4":
       case "gpt":
       case "ia":
       case "lite":
@@ -366,8 +365,8 @@ async function runLite({ socket, data }) {
         await react("🏓");
         await reply("🏓 Pong!");
         break;
-      case "play-audio":
-      case "play-yt":
+      case "playaudio":
+      case "playyt":
       case "play":
         if (!args.length) {
           throw new InvalidParameterError(

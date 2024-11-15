@@ -313,17 +313,6 @@ Envie um vídeo menor!`
   const isAdmin = async (jid) => checkUserRole(jid, "admin");
   const isOwner = async (jid) => checkUserRole(jid, "owner");
 
-  const deleteMessage = async (from, info) => {
-    await lite.sendMessage(from, {
-      delete: {
-        from,
-        fromMe: false,
-        id: info.key.id,
-        participant: info.key.participant,
-      },
-    });
-  };
-
   const ban = async (from, userJid) => {
     await lite.groupParticipantsUpdate(from, [userJid], "remove");
   };
@@ -345,7 +334,6 @@ Envie um vídeo menor!`
     userJid,
     audioFromURL,
     ban,
-    deleteMessage,
     downloadImage,
     downloadSticker,
     downloadVideo,
