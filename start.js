@@ -81,6 +81,18 @@ async function startConnection() {
   if (!socket.authState.creds.registered) {
     warningLog("Credenciais ainda não configuradas!");
 
+    let enableTutor = "s";
+
+    do {
+      if (!["s", "n"].includes(enableTutor)) {
+        errorLog("Opção inválida! Tente novamente.");
+      }
+
+      enableTutor = await textInput(
+        "Deseja ativar o tutor com explicações detalhadas para instalação no termux? (s/n): "
+      );
+    } while (!["s", "n"].includes(enableTutor));
+
     infoLog(
       'Informe o seu número do WhatsApp, somente números (exemplo: "5511920202020")'
     );
@@ -95,22 +107,23 @@ async function startConnection() {
       process.exit(1);
     }
 
-    await delay(1000);
+    if (enableTutor === "s") {
+      await delay(1000);
 
-    tutorLog("Estamos gerando seu código... lembre-se:\n");
+      tutorLog("Estamos gerando seu código... lembre-se:\n");
 
-    await delay(5000);
+      await delay(5000);
 
-    tutorLog(
-      `1. Depois que colar o código no WhatsApp, aguarde 10 segundos e depois pare o bot com CTRL + C.
-      
+      tutorLog(
+        `1. Depois que colar o código no WhatsApp, aguarde 10 segundos e depois pare o bot com CTRL + C.
+        
 ⌛ Gerando código, aguarde.. 25% concluído.\n`
-    );
+      );
 
-    await delay(10_000);
+      await delay(10_000);
 
-    tutorLog(
-      `2. Depois de parar o bot, 
+      tutorLog(
+        `2. Depois de parar o bot, 
 abra o MT Manager ou ZArchiver na pasta:
 
 📁 DevGui
@@ -123,24 +136,24 @@ Abra o arquivo config.js e configure:
 - Número do dono do bot
 
 ⌛ Gerando código, aguarde... 50% concluído.\n`,
-      "cyan"
-    );
+        "cyan"
+      );
 
-    await delay(10_000);
+      await delay(10_000);
 
-    tutorLog(
-      `3. Depois, abra o termux e digite:
+      tutorLog(
+        `3. Depois, abra o termux e digite:
       
 cd /sdcard/DevGui/lite-bot
 
 ⌛ Gerando código, aguarde... 75% concluído.\n`
-    );
+      );
 
-    await delay(10_000);
+      await delay(10_000);
 
-    tutorLog(
-      `4. Por último, inicie o bot com:
-
+      tutorLog(
+        `4. Por último, inicie o bot com:
+  
 yarn start
 
 ou
@@ -148,10 +161,11 @@ ou
 npm start
 
 ✅ Geração concluída! Enviando código...\n`,
-      "green"
-    );
+        "green"
+      );
 
-    await delay(5_000);
+      await delay(5_000);
+    }
 
     const code = await socket.requestPairingCode(onlyNumbers(phoneNumber));
 
