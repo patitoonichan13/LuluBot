@@ -6,7 +6,6 @@
  * @author Dev Gui </>
  */
 
-const fs = require("node:fs");
 const { getProfileImageData, onlyNumbers } = require("./utils/functions");
 const { isActiveWelcomeGroup } = require("./database/db");
 
