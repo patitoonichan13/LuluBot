@@ -1,6 +1,6 @@
 {
   "name": "lite-bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Bot de WhatsApp minimalista multifunções.",
   "main": "start.js",
   "scripts": {

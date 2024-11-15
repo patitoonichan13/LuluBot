@@ -6,7 +6,7 @@
 
 <div align="center">
     <a href="https://github.com/guiireal/lite-bot">
-        <img alt="Version" src="https://img.shields.io/badge/Vers%C3%A3o-1.0.0-blue">
+        <img alt="Version" src="https://img.shields.io/badge/Vers%C3%A3o-1.0.1-blue">
     </a>
 </div>
 
