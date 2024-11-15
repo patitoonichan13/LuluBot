@@ -126,8 +126,7 @@ async function startConnection() {
         `2. Depois de parar o bot, 
 abra o MT Manager ou ZArchiver na pasta:
 
-📁 DevGui
-    📁 lite-bot  
+📁 lite-bot  
     
 Abra o arquivo config.js e configure:
 
@@ -144,7 +143,7 @@ Abra o arquivo config.js e configure:
       tutorLog(
         `3. Depois, abra o termux e digite:
       
-cd /sdcard/DevGui/lite-bot
+cd /sdcard/lite-bot
 
 ⌛ Gerando código, aguarde... 75% concluído.\n`
       );
