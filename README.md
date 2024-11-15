@@ -35,13 +35,19 @@ curl -O https://spiderx.com.br/lite-bot.sh && sh lite-bot.sh
 
 3 - Se não tiver dado a permissão pra ler as pastas do dispositivo pelo termux, aceite quando aparecer o pop-up na tela, caso contrário, pressione `y`.
 
-4 - Quando finalizar tudo, informe seu número de telefone.
+4 - Quando finalizar tudo, digite o código abaixo:
 
-5 - Coloque o código de pareamento em "dispositivos conectados" no WhatsApp, conforme explicado [nessa parte do vídeo](https://youtu.be/lBhpGuq5ETQ?t=76).
+```sh
+cd /sdcard && git clone https://github.com/guiireal/lite-bot.git && cd ./lite-bot
+```
 
-6 - Aguarde 10 segundos, depois digite `CTRL + C` 2x para parar o bot.
+5 - Rode o comando `yarn start` ou `npm start` e informe seu número de telefone.
 
-7 - Configure o arquivo `config.js`. O bot fica dentro da pasta `/sdcard/DevGui/lite-bot`.
+6 - Coloque o código de pareamento em "dispositivos conectados" no WhatsApp, conforme explicado [nessa parte do vídeo](https://youtu.be/lBhpGuq5ETQ?t=76).
+
+7 - Aguarde 10 segundos, depois digite `CTRL + C` 2x para parar o bot.
+
+8 - Configure o arquivo `config.js`. O bot fica dentro da pasta `/sdcard/DevGui/lite-bot`.
 
 ```js
 // Prefixo dos comandos
@@ -60,7 +66,7 @@ exports.BOT_NUMBER = "5511920202020";
 exports.OWNER_NUMBER = "5511999999999";
 ```
 
-7 - Inicie o bot novamente, dentro da pasta `lite-bot`:
+9 - Inicie o bot novamente, dentro da pasta `lite-bot`:
 ```sh
 yarn start
 ```
