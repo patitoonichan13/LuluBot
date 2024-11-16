@@ -5,7 +5,6 @@
  *
  * @author Dev Gui </>
  */
-
 const { getProfileImageData, onlyNumbers } = require("./utils/functions");
 const { isActiveWelcomeGroup } = require("./database/db");
 
