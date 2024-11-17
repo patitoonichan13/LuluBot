@@ -118,7 +118,7 @@ exports.SPIDER_API_TOKEN = "seu_token_aqui";
 
 ## Erros comuns
 
-### Causa: Permission denied (permissão negada).
+### Causa: Permission denied (permissão negada) ao acessar `cd /sdcard`
 
 ![Permissão negada](./assets/images/erros-comuns-1.png)
 
