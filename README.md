@@ -120,7 +120,11 @@ exports.SPIDER_API_TOKEN = "seu_token_aqui";
 
 ### Causa: Permission denied (permissão negada) ao acessar `cd /sdcard`
 
-![Permissão negada](./assets/images/erros-comuns-1.png)
+<br/>
+
+<div align="center">
+    <img src="./assets/images/erros-comuns-1.png" width="700">
+</div>
 
 
 ### Solução: abra o termux e digite `termux-setup-storage`
