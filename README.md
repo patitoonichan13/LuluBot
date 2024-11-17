@@ -123,7 +123,7 @@ exports.SPIDER_API_TOKEN = "seu_token_aqui";
 
 ## Licença
 
-[MIT](https://github.com/guiireal/takeshi-bot/blob/main/LICENSE)
+[GNU](https://github.com/guiireal/lite-bot/blob/main/LICENSE)
 
 ## ⚠ Disclaimer
 
