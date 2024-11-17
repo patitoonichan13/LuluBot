@@ -24,6 +24,12 @@
 - [Spider X API](https://api.spiderx.com.br)
 - [Yarn 1.22.22](https://yarnpkg.com)
 
+## ⚠ Atenção
+
+Se você pagou por este código e não recebeu suporte da pessoa que te vendeu, saiba que você foi **roubado**.
+Nós não prestamos suporte gratuíto, caso você tenha adquirido esta base com terceiros e tenha pago por isso.
+Nós não temos vínculo nenhum com terceiros.
+
 ## Instalação no Termux <a id="termux-setup"></a>
 
 1 - Abra o Termux e execute os comandos abaixo.<br/>
@@ -117,11 +123,6 @@ exports.SPIDER_API_TOKEN = "seu_token_aqui";
 ## Licença
 
 [MIT](https://github.com/guiireal/takeshi-bot/blob/main/LICENSE)
-
-## ⚠ Atenção
-
-Se você pagou por este código e não recebeu suporte da pessoa que te vendeu, saiba que você foi **roubado**.
-Nós não prestamos suporte gratuíto, caso você tenha adquirido esta base com terceiros e tenha pago por isso.
 
 ## ⚠ Disclaimer
 
