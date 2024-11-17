@@ -123,7 +123,7 @@ exports.SPIDER_API_TOKEN = "seu_token_aqui";
 <br/>
 
 <div align="center">
-    <img src="./assets/images/erros-comuns-1.png" width="600">
+    <img src="./assets/images/erros-comuns-1.png" width="500">
 </div>
 
 
