@@ -127,7 +127,7 @@ exports.SPIDER_API_TOKEN = "seu_token_aqui";
 </div>
 
 
-### Solução: abra o termux, digite `termux-setup-storage` depois, aceite as permissões
+### Solução: abra o termux, digite `termux-setup-storage` e depois, aceite as permissões
 
 ## Inscreva-se no canal!
 
