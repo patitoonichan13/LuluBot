@@ -22,6 +22,7 @@
 - [Herc.ai](https://www.npmjs.com/package/hercai)
 - [Node.js 20.17.0](https://nodejs.org/en)
 - [Spider X API](https://api.spiderx.com.br)
+- [Yarn 1.22.22](https://yarnpkg.com)
 
 ## Instalação no Termux <a id="termux-setup"></a>
 
