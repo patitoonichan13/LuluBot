@@ -123,7 +123,7 @@ exports.SPIDER_API_TOKEN = "seu_token_aqui";
 
 ## Licença
 
-[GPL-3.0)](https://github.com/guiireal/lite-bot/blob/main/LICENSE)
+[GPL-3.0](https://github.com/guiireal/lite-bot/blob/main/LICENSE)
 
 ## ⚠ Disclaimer
 
