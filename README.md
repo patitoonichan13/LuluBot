@@ -118,6 +118,11 @@ exports.SPIDER_API_TOKEN = "seu_token_aqui";
 
 [MIT](https://github.com/guiireal/takeshi-bot/blob/main/LICENSE)
 
+## ⚠ Atenção
+
+Se você pagou por este código e não recebeu suporte da pessoa que te vendeu, saiba que você foi **roubado**.
+Nós não prestamos suporte gratuíto, caso você tenha adquirido esta base com terceiros e tenha pago por isso.
+
 ## ⚠ Disclaimer
 
 Neste projeto, precisei hospedar a node_modules, para auxiliar quem está rodando o bot pelo celular, pois muitos deles podem não rodar o `npm install` ou `yarn` pelo termux corretamente.
