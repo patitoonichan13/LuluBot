@@ -94,7 +94,7 @@ async function startConnection() {
     } while (!["s", "n"].includes(enableTutor));
 
     infoLog(
-      'Informe o seu número do WhatsApp, somente números (exemplo: "5511920202020")'
+      'Informe o número do Bot assim como está no WhatsApp, somente números (exemplo: "5511920202020")'
     );
 
     const phoneNumber = await textInput("Informe o seu número de telefone: ");
