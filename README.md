@@ -116,6 +116,15 @@ exports.SPIDER_API_TOKEN = "seu_token_aqui";
 | Play vídeo | ✅ | Membro | ✅
 | Sticker | ✅ | Membro | ❌
 
+## Erros comuns
+
+### Causa: Permission denied (permissão negada).
+
+![Permissão negada](./assets/images/erros-comuns-1.png)
+
+
+### Solução: abra o termux e digite `termux-setup-storage`
+
 ## Inscreva-se no canal!
 
 <a href="https://www.youtube.com/@devgui_?sub_confirmation=1" target="_blank" rel="noopener noreferrer"><img src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube"></a>
