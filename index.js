@@ -148,6 +148,10 @@ async function runLite({ socket, data }) {
     return;
   }
 
+  if (!checkPrefix(prefix)) {
+    return;
+  }
+
   try {
     /**
      * Aqui você vai definir
