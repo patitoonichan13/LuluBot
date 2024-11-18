@@ -7,6 +7,7 @@
  */
 const { getProfileImageData, onlyNumbers } = require("./utils/functions");
 const { isActiveWelcomeGroup } = require("./database/db");
+const { warningLog } = require("./utils/terminal");
 
 async function welcome({ socket: lite, data }) {
   const from = data.id;
