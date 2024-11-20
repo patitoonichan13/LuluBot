@@ -49,16 +49,13 @@ E aceite as permissões que pedir.
 pkg upgrade -y && pkg update -y && pkg install git -y && pkg install nodejs-lts -y && pkg install ffmpeg -y && npm install -g yarn
 ```
 
-4 - Se não tiver dado a permissão pra ler as pastas do dispositivo pelo termux, 
-aceite quando aparecer o pop-up na tela, caso contrário, pressione `y`.
-
-5 - Quando finalizar tudo, digite o código abaixo:
+4 - Quando finalizar tudo, digite o código abaixo:
 
 ```sh
 cd /sdcard && git clone https://github.com/guiireal/lite-bot.git && cd ./lite-bot
 ```
 
-6 - Configure o arquivo `config.js`. O bot fica dentro da pasta `/sdcard/lite-bot`.
+5 - Configure o arquivo `config.js`. O bot fica dentro da pasta `/sdcard/lite-bot`.
 _Use o [MT Manager](https://www.mediafire.com/file/y09xgucgygmt1ny/MT_Manager_2.16.7_Dev_Gui.apk/file) ou o [ZArchiver](https://play.google.com/store/apps/details?id=ru.zdevs.zarchiver&hl=pt_BR) para fazer isso (localizar a pasta)._
 
 ```js
@@ -77,17 +74,17 @@ exports.BOT_NUMBER = "5511920202020";
 // Número do dono do bot. Coloque o número do dono do bot (apenas números).
 exports.OWNER_NUMBER = "5511999999999";
 ```
-7 - Salve o que você acabou de configurar.
+6 - Salve o que você acabou de configurar.
 
-8 - Vá no termux e digite `/sdcard/lite-bot`.
+7 - Vá no termux e digite `/sdcard/lite-bot`.
 
-9 - Rode o comando `yarn start` ou `npm start` e informe seu número de telefone.
+8 - Rode o comando `yarn start` ou `npm start` e informe seu número de telefone.
 
-10 - Coloque o código de pareamento em "dispositivos conectados" no WhatsApp, conforme explicado [nessa parte do vídeo](https://youtu.be/lBhpGuq5ETQ?t=76).
+9 - Coloque o código de pareamento em "dispositivos conectados" no WhatsApp, conforme explicado [nessa parte do vídeo](https://youtu.be/lBhpGuq5ETQ?t=76).
 
-11 - Aguarde 10 segundos, depois digite `CTRL + C` 2x para parar o bot.
+10 - Aguarde 10 segundos, depois digite `CTRL + C` 2x para parar o bot.
 
-12 - Inicie o bot novamente, dentro da pasta `lite-bot`:
+11 - Inicie o bot novamente, dentro da pasta `lite-bot`:
 ```sh
 yarn start
 ```
