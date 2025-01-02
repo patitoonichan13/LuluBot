@@ -7,7 +7,7 @@
  */
 const { getProfileImageData, onlyNumbers } = require("./utils/functions");
 const { isActiveWelcomeGroup } = require("./database/db");
-const { warningLog } = require("./utils/terminal");
+const { errorLog } = require("./utils/terminal");
 
 async function welcome({ socket: lite, data }) {
   const from = data.id;
@@ -27,25 +27,11 @@ async function welcome({ socket: lite, data }) {
         mentions: [userJid],
       });
     } catch (error) {
-      warningLog(
+      errorLog(
         "Alguém entrou no grupo e eu não consegui enviar a mensagem de boas-vindas!"
       );
     }
   }
-
-  /**
-   * Caso membro
-   * saia do grupo,
-   * basta descomentar
-   * o código abaixo e
-   * adicionar a sua
-   * própria programação
-   * abaixo.
-   */
-
-  // if (data.action === "remove") {
-  //
-  // }
 }
 
 module.exports = { welcome };

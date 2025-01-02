@@ -1,7 +1,7 @@
 const path = require("path");
 
 // Prefixo dos comandos.
-exports.PREFIX = "/";
+exports.PREFIX = "$";
 
 // Emoji do bot (mude se preferir).
 exports.BOT_EMOJI = "🤖";
@@ -10,10 +10,10 @@ exports.BOT_EMOJI = "🤖";
 exports.BOT_NAME = "LITE BOT";
 
 // Número do bot (apenas números).
-exports.BOT_NUMBER = "5511920202020";
+exports.BOT_NUMBER = "554796974871";
 
 // Número do dono do bot (apenas números).
-exports.OWNER_NUMBER = "554520202020";
+exports.OWNER_NUMBER = "5511996122056";
 
 // Diretório de arquivos de mídia.
 exports.ASSETS_DIR = path.resolve(__dirname, "assets");
@@ -31,4 +31,4 @@ exports.TIMEOUT_IN_MILLISECONDS_BY_ACTION = 700;
 exports.SPIDER_API_BASE_URL = "https://api.spiderx.com.br/api";
 
 // Obtenha seu token, criando uma conta em: https://api.spiderx.com.br.
-exports.SPIDER_API_TOKEN = "seu_token_aqui";
+exports.SPIDER_API_TOKEN = "LcF9hfX8SGRU76renzyJ";

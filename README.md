@@ -6,7 +6,7 @@
 
 <div align="center">
     <a href="https://github.com/guiireal/lite-bot">
-        <img alt="Version" src="https://img.shields.io/badge/Vers%C3%A3o-1.0.1-blue">
+        <img alt="Version" src="https://img.shields.io/badge/Vers%C3%A3o-1.1.0-blue">
     </a>
 </div>
 
@@ -115,6 +115,7 @@ exports.SPIDER_API_TOKEN = "seu_token_aqui";
 | Marcar todos | ✅ | Admin | ❌
 | Busca CEP | ✅ | Membro | ❌
 | Figurinha de texto animada | ✅ | Membro | ✅
+| Figurinha de texto | ✅ | Membro | ✅
 | Geração de imagens com IA | ✅ | Membro | ❌
 | GPT 4 | ✅ | Membro | ✅
 | Ping | ✅ | Membro | ❌

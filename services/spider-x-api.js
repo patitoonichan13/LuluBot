@@ -83,6 +83,20 @@ async function attp(text) {
   )}&api_key=${SPIDER_API_TOKEN}`;
 }
 
+async function ttp(text) {
+  if (!text) {
+    throw new DangerError("Você precisa informar o parâmetro de texto!");
+  }
+
+  if (!hasToken(SPIDER_API_TOKEN)) {
+    throw new DangerError(tokenErrorMessage);
+  }
+
+  return `${SPIDER_API_BASE_URL}/stickers/ttp?text=${encodeURIComponent(
+    text
+  )}&api_key=${SPIDER_API_TOKEN}`;
+}
+
 async function welcome(text, description, imageURL) {
   if (!text || !description || !imageURL) {
     throw new DangerError(
@@ -103,6 +117,7 @@ async function welcome(text, description, imageURL) {
 
 module.exports = {
   attp,
+  ttp,
   gpt4,
   playAudio,
   playVideo,

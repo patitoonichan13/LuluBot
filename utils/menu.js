@@ -43,6 +43,7 @@ exports.menu = () => {
 ▢ • ${PREFIX}play-audio
 ▢ • ${PREFIX}play-video
 ▢ • ${PREFIX}sticker
+▢ • ${PREFIX}ttp
 ▢
 ╰━━─「🚀」─━━`;
 };

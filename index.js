@@ -13,9 +13,15 @@
  */
 const path = require("node:path");
 const { menu } = require("./utils/menu");
-const { ASSETS_DIR, BOT_NUMBER } = require("./config");
+const { ASSETS_DIR, BOT_NUMBER, SPIDER_API_TOKEN } = require("./config");
 const { errorLog } = require("./utils/terminal");
-const { attp, gpt4, playAudio, playVideo } = require("./services/spider-x-api");
+const {
+  attp,
+  ttp,
+  gpt4,
+  playAudio,
+  playVideo,
+} = require("./services/spider-x-api");
 const { consultarCep } = require("correios-brasil/dist");
 const { image } = require("./services/hercai");
 
@@ -219,11 +225,11 @@ async function runLite({ socket, data }) {
 
         await waitReact();
 
-        const url = await attp(args[0].trim());
+        const attpUrl = await attp(fullArgs.trim());
 
         await successReact();
 
-        await stickerFromURL(url);
+        await stickerFromATTPURL(url);
         break;
       case "ban":
       case "banir":
@@ -380,7 +386,7 @@ async function runLite({ socket, data }) {
 
         await waitReact();
 
-        const playAudioData = await playAudio(args[0]);
+        const playAudioData = await playAudio(fullArgs);
 
         if (!playAudioData) {
           await errorReply("Nenhum resultado encontrado!");
@@ -459,6 +465,21 @@ async function runLite({ socket, data }) {
         const welcomeContext = welcome ? "ativado" : "desativado";
 
         await reply(`Recurso de boas-vindas ${welcomeContext} com sucesso!`);
+        break;
+      case "ttp":
+        if (!args.length) {
+          throw new InvalidParameterError(
+            "Você precisa informar o texto que deseja transformar em figurinha."
+          );
+        }
+
+        await waitReact();
+
+        const ttpUrl = await ttp(fullArgs.trim());
+
+        await successReact();
+
+        await stickerFromURL(ttpUrl);
         break;
     }
     // ❌ Não coloque nada abaixo ❌
