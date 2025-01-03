@@ -178,7 +178,7 @@ function loadLiteFunctions({ socket: lite, data }) {
     );
   };
 
-  const infoFromSticker = async (info) => {
+  const stickerFromInfo = async (info) => {
     const outputPath = path.resolve(TEMP_DIR, getRandomName("webp"));
 
     if (isImage) {
@@ -341,7 +341,7 @@ Envie um vídeo menor!`
     errorReply,
     imageFromFile,
     imageFromURL,
-    infoFromSticker,
+    stickerFromInfo,
     isAdmin,
     isOwner,
     react,

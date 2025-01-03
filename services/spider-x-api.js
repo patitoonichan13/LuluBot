@@ -117,9 +117,9 @@ async function welcome(text, description, imageURL) {
 
 module.exports = {
   attp,
-  ttp,
   gpt4,
   playAudio,
   playVideo,
+  ttp,
   welcome,
 };

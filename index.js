@@ -93,7 +93,6 @@ async function runLite({ socket, data }) {
     errorReply,
     imageFromFile,
     imageFromURL,
-    infoFromSticker,
     isAdmin,
     isOwner,
     react,
@@ -101,6 +100,7 @@ async function runLite({ socket, data }) {
     reply,
     sendText,
     stickerFromFile,
+    stickerFromInfo,
     stickerFromURL,
     successReact,
     successReply,
@@ -431,7 +431,7 @@ async function runLite({ socket, data }) {
         }
 
         await waitReact();
-        await infoFromSticker(info);
+        await stickerFromInfo(info);
         break;
       case "welcome":
       case "bemvindo":
